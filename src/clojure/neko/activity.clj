@@ -59,7 +59,7 @@
 
   Available optional arguments:
 
-  :extends, :prefix - same as for `gen-class`.
+  :extends, :implements, :prefix - same as for `gen-class`.
 
   :features - window features to be requested for the activity.
   Relevant only if :create is used.
@@ -73,7 +73,7 @@
 
   :on-start, :on-restart, :on-resume, :on-pause, :on-stop, :on-destroy
   - same as :on-create but require a one-argument function."
-  [name & {:keys [extends prefix on-create on-create-options-menu
+  [name & {:keys [extends implements prefix on-create on-create-options-menu
                   on-options-item-selected on-activity-result
                   on-new-intent def state key features]
            :as options}]
@@ -92,6 +92,7 @@ Use (*a) to get the current activity."))
         ~@(when state
             '(:init "init" :state "state"))
         :extends ~(or extends Activity)
+        :implements ~implements
         :exposes-methods {~'onCreate ~'superOnCreate
                           ~'onStart ~'superOnStart
                           ~'onRestart ~'superOnRestart
