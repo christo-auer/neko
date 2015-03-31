@@ -27,7 +27,7 @@
    For detailed information on available features and utilities,
    please consult the [[https://github.com/alexander-yakushev/neko/wiki][wiki]].
 
-   Marginalia docs are available [[http://alexander-yakushev.github.io/neko/][here]].
+   Marginalia docs are available [[http://clojure-android.github.io/neko/][here]].
 
 ** How to build Neko yourself
 
