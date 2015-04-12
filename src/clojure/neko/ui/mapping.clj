@@ -178,9 +178,14 @@
   Optional arguments
   - :classname, :inherits, :traits, :values, :attributes, :container-type."
   [kw-name & {:as args}]
-  (swap! keyword-mapping assoc kw-name
-         (if-not (contains? args :inherits)
-           (assoc args :inherits :view)
-           args))
+  (swap! keyword-mapping
+         #(assoc % kw-name
+                 (let [parent (if (contains? args :inherits)
+                                (:inherits args)
+                                :view)
+                       classname (if (contains? args :classname)
+                                   (:classname args)
+                                   (get-in % [parent :classname]))]
+                   (assoc args :inherits parent :classname classname))))
   (if-let [classname (:classname args)]
     (swap! reverse-mapping assoc classname kw-name)))
