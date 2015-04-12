@@ -13,23 +13,20 @@
 (def ^{:private true} keyword-mapping
   (atom
    ;; UI widgets
-   {:view {:traits [:def :id :padding :on-click :on-long-click :on-touch
+   {:view {:classname android.view.View
+           :traits [:def :id :padding :on-click :on-long-click :on-touch
                     :on-create-context-menu :on-key
                     :default-layout-params :linear-layout-params
                     :relative-layout-params :listview-layout-params]
            :value-namespaces
-           {:text-alignment View
-            :text-direction View
-            :visibility View}}
+           {:gravity android.view.Gravity}}
     :view-group {:inherits :view
                  :traits [:container :id-holder]}
     :button {:classname android.widget.Button
              :inherits :text-view
              :attributes {:text "Default button"}}
     :linear-layout {:classname android.widget.LinearLayout
-                    :inherits :view-group
-                    :value-namespaces
-                    {:gravity android.view.Gravity}}
+                    :inherits :view-group}
     :relative-layout {:classname android.widget.RelativeLayout
                       :inherits :view-group}
     :edit-text {:classname android.widget.EditText
@@ -80,6 +77,8 @@
     android.widget.TextView :text-view
     android.widget.ListView :list-view
     android.widget.ImageView :image-view
+    android.webkit.WebView :web-view
+    android.widget.ScrollView :scroll-view
     android.app.ProgressDialog :progress-dialog}))
 
 (defn set-classname!
@@ -151,8 +150,7 @@
           (reflect-field
            (classname
             (or (and attribute
-                     (recursive-find (list element-kw
-                                           :value-namespaces attribute)))
+                     (recursive-find [element-kw :value-namespaces attribute]))
                 element-kw))
            (keyword->static-field value))))))
 
