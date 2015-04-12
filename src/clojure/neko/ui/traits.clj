@@ -229,8 +229,12 @@ next-level elements."
   [^View wdg, {:keys [layout-width layout-height layout-weight layout-gravity]
                :as attributes}
    {:keys [container-type]}]
-  (let [width  (kw/value :layout-params (or layout-width  :wrap))
-        height (kw/value :layout-params (or layout-height :wrap))
+  (let [^int width (->> (or layout-width :wrap)
+                        (kw/value :layout-params)
+                        (to-dimension (.getContext wdg)))
+        ^int height (->> (or layout-height :wrap)
+                         (kw/value :layout-params)
+                         (to-dimension (.getContext wdg)))
         weight (or layout-weight 0)
         params (LinearLayout$LayoutParams. width height weight)]
     (apply-margins-to-layout-params (.getContext wdg) params attributes)
