@@ -11,7 +11,7 @@
   into the current namespace."
   []
   `(do ~@(for [res-type '[anim drawable color layout menu
-                          string array plurals style id]]
+                          string array plurals style id dimen]]
            `(try (import '~(symbol (str package-name ".R$" res-type)))
                  (catch ClassNotFoundException _# nil)))))
 
