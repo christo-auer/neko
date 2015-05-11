@@ -138,8 +138,8 @@ next-level elements."
 ;; ### Basic traits
 
 (deftrait :text
-  "Sets widget's text to a string, integer ID or a keyword
-  representing the string resource provided to `:text` attribute."
+  "Sets widget's text to a string or a resource ID representing a string
+  resource provided to `:text` attribute."
   [^TextView wdg, {:keys [text] :or {text ""}} _]
   (.setText wdg ^CharSequence (res/get-string text)))
 
@@ -183,7 +183,6 @@ next-level elements."
   (condp instance? image
     Bitmap (.setImageBitmap wdg image)
     Drawable (.setImageDrawable wdg image)
-    Keyword (.setImageDrawable wdg (neko.resource/get-drawable image))
     Uri (.setImageURI wdg image)
     ;; Otherwise assume `image` to be resource ID.
     (.setImageResource wdg image)))
