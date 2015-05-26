@@ -447,7 +447,7 @@ next-level elements."
   "Takes :on-editor-action attribute, which should be function
   of three arguments, and sets it as OnEditorAction for the
   TexView widget"
-  [^TextView wdg, {:keys [on-editor-action]}]
+  [^TextView wdg, {:keys [on-editor-action]} _]
   (.setOnEditorActionListener wdg (text-view-listeners/on-editor-action-call on-editor-action)))
 
 ;; ### ID storing traits
