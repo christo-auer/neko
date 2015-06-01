@@ -14,7 +14,7 @@
   data. Returns an Adapter object that displays ref-type contents.
   When ref-type is updated, Adapter gets updated as well.
 
-  `create-view-fn` is a nullary function. `update-view-fn` is
+  `create-view-fn` is a function of context. `update-view-fn` is
   a function of four arguments: element position, view to update,
   parent view container and the respective data element from the
   ref-type. `access-fn` argument is optional, it is called on the
