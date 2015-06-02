@@ -8,6 +8,7 @@
             ImageView ImageView$ScaleType RelativeLayout ScrollView FrameLayout
             Gallery]
            android.app.ProgressDialog
+           android.view.inputmethod.EditorInfo
            [android.view View ViewGroup$LayoutParams Gravity]))
 
 ;; This atom keeps all the relations inside the map.
@@ -34,7 +35,23 @@
     :frame-layout {:classname android.widget.FrameLayout
                    :inherits :view-group}
     :edit-text {:classname android.widget.EditText
-                :inherits :view}
+                :inherits :view
+                :values {:number      EditorInfo/TYPE_CLASS_NUMBER
+                         :datetime    EditorInfo/TYPE_CLASS_DATETIME
+                         :text        EditorInfo/TYPE_CLASS_TEXT
+                         :phone       EditorInfo/TYPE_CLASS_PHONE
+                         :go          EditorInfo/IME_ACTION_GO
+                         :done        EditorInfo/IME_ACTION_DONE
+                         :unspecified EditorInfo/IME_ACTION_UNSPECIFIED
+                         :send        EditorInfo/IME_ACTION_SEND
+                         :search      EditorInfo/IME_ACTION_SEARCH
+                         :previous    EditorInfo/IME_ACTION_PREVIOUS
+                         :next        EditorInfo/IME_ACTION_NEXT}}
+    :progress-bar {:classname android.widget.ProgressBar
+                   :inherits  :view
+                   :value-namespaces {:visibility android.view.View}}
+    :progress-bar-large {:inherits  :progress-bar
+                         :constructor-args [nil android.R$attr/progressBarStyleLarge]}
     :text-view {:classname android.widget.TextView
                 :inherits :view
                 :value-namespaces
