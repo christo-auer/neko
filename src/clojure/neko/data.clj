@@ -2,11 +2,11 @@
   "Contains utilities to manipulate data that is passed between
   Android entities via Bundles and Intents."
   (:refer-clojure :exclude [assoc!])
-  (:use [neko.context :only [context]])
   (:import android.os.Bundle android.content.Intent
            android.content.SharedPreferences
            android.content.SharedPreferences$Editor
-           android.content.Context))
+           android.content.Context
+           neko.App))
 
 (defprotocol GenericExtrasKey
   "If given a string returns itself, otherwise transforms a argument
@@ -93,14 +93,13 @@
 (defn get-shared-preferences
   "Returns the SharedPreferences object for the given name. Possible modes:
   `:private`, `:world-readable`, `:world-writeable`."
-  {:forms '([context name mode])}
   ([name mode]
-     (println "Two-argument version is deprecated. Please use (get-shared-preferences context name mode)"))
-  ([^Context context name mode]
-     {:pre [(or (number? mode) (contains? sp-access-modes mode))]}
-     (let [mode (if (number? mode)
-                  mode (sp-access-modes mode))]
-       (.getSharedPreferences context name mode))))
+   (get-shared-preferences App/instance name mode))
+  ([^Context context, name mode]
+   {:pre [(or (number? mode) (contains? sp-access-modes mode))]}
+   (let [mode (if (number? mode)
+                mode (sp-access-modes mode))]
+     (.getSharedPreferences context name mode))))
 
 (defn ^SharedPreferences$Editor assoc!
   "Puts the value into the SharedPreferences editor instance. Accepts
