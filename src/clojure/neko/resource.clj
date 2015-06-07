@@ -2,7 +2,7 @@
   "Provides utilities to resolve application resources."
   (:import android.content.Context
            android.graphics.drawable.Drawable
-           neko.Application))
+           neko.App))
 
 (defmacro import-all
   "Imports all existing application's R subclasses (R$drawable, R$string etc.)
@@ -26,7 +26,7 @@
   [& args]
   (let [[^Context context args] (if (instance? Context (first args))
                                   [(first args) (rest args)]
-                                  [Application/instance args])
+                                  [App/instance args])
         [res-id & format-args] args]
     (cond (string? res-id) res-id
           format-args      (.getString context res-id (to-array format-args))
@@ -36,7 +36,7 @@
   "Gets a Drawable object associated with the given resource ID. If res-id is a
   Drawable, returns it unchanged."
   ([res-id]
-   (get-drawable Application/instance res-id))
+   (get-drawable App/instance res-id))
 
   ([^Context context, res-id]
    (if (instance? Drawable res-id)

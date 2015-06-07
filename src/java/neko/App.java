@@ -2,17 +2,25 @@ package neko;
 
 import android.util.Log;
 import clojure.java.api.Clojure;
+import clojure.lang.DalvikDynamicClassLoader;
 import clojure.lang.Var;
 import clojure.lang.IFn;
 
-public class Application extends android.app.Application {
+public class App extends android.app.Application {
 
-    private static String TAG = "neko.Application";
-    public static Application instance;
+    private static String TAG = "neko.App";
+    public static App instance;
 
     @Override
     public void onCreate() {
         instance = this;
+        DalvikDynamicClassLoader.setContext(this);
+        // ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        // Log.d(TAG, "What's the loader! " + loader);
+        // if (loader instanceof DalvikDynamicClassLoader) {
+        //     Log.d(TAG, "INSIDE!");
+        //     ((DalvikDynamicClassLoader)loader).initializeDynamicCompilation(this);
+        // }
     }
 
     // This method is only necessary for asynchronous loading. Clojure is
