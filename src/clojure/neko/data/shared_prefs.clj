@@ -1,5 +1,6 @@
 (ns neko.data.shared-prefs
-  "Utilities for interoperating with SharedPreferences class."
+  "Utilities for interoperating with SharedPreferences class. The original idea
+  is by Artur Malabarba."
   (:require [clojure.data :as data])
   (:import [android.content Context SharedPreferences SharedPreferences$Editor]
            neko.App))
