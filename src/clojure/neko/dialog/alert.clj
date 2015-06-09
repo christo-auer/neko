@@ -1,14 +1,3 @@
-; Copyright © 2011 Sattvik Software & Technology Resources, Ltd. Co.
-; All rights reserved.
-;
-; This program and the accompanying materials are made available under the
-; terms of the Eclipse Public License v1.0 which accompanies this distribution,
-; and is available at <http://www.eclipse.org/legal/epl-v10.html>.
-;
-; By using this software in any fashion, you are agreeing to be bound by the
-; terms of this license.  You must not remove this notice, or any other, from
-; this software.
-
 (ns neko.dialog.alert
   "Helps build and manage alert dialogs.  The core functionality of this
   namespace is built around the AlertDialogBuilder protocol.  This allows using
@@ -18,67 +7,49 @@
   In general, it is preferable to use the functional version of the builder as
   it is immutable.  Using the protocol with an AlertDialog.Builder object works
   by mutating the object."
-  {:author "Daniel Solano Gómez"}
-  (:import android.app.AlertDialog$Builder
-           neko.App))
+  (:require [neko.listeners.dialog :as listeners]
+            [neko.resource :as res]
+            neko.ui
+            [neko.ui.mapping :refer [defelement]]
+            [neko.ui.traits :refer [deftrait]])
+  (:import android.app.AlertDialog$Builder))
 
-(defprotocol AlertDialogBuilder
-  "Defines the functionality needed to build new alert dialogues."
-  (create [builder]
-    "Actually creates the AlertDialog.")
-  (get-builder-object [builder]
-    "Returns an instance of AlertDialog.Builder with the properties from this
-    builder.")
-  (with-cancellation [builder cancellable?]
-    "Sets whether or not the dialog may be canceled.")
-  )
+(deftrait :positive-button
+  "Takes :positive-text (either string or resource ID)
+  and :positive-callback (function of 2 args: dialog and result), and sets it as
+  the positive button for the dialog."
+  {:attributes [:positive-text :positive-callback]}
+  [^AlertDialog$Builder builder,
+   {:keys [positive-text positive-callback]} _]
+  (.setPositiveButton builder (res/get-string positive-text)
+                      (listeners/on-click-call positive-callback)))
 
-(defrecord FunctionalAlertDialogBuilder
-  [^android.content.Context context
-   ^boolean cancellable])
+(deftrait :negative-button
+  "Takes :negative-text (either string or resource ID)
+  and :negative-callback (function of 2 args: dialog and result), and sets it as
+  the negative button for the dialog."
+  {:attributes [:negative-text :negative-callback]}
+  [^AlertDialog$Builder builder,
+   {:keys [negative-text negative-callback]} _]
+  (.setNegativeButton builder (res/get-string negative-text)
+                      (listeners/on-click-call negative-callback)))
 
-(defn- new-builder?
-  "Predicate used for testing whether a new builder is a functional builder but
-  is different from the original builder."
-  [old-builder new-builder]
-  (and (instance? FunctionalAlertDialogBuilder old-builder)
-       (not (identical? old-builder new-builder))))
+(deftrait :neutral-button
+  "Takes :neutral-text (either string or resource ID)
+  and :neutral-callback (function of 2 args: dialog and result), and sets it as
+  the neutral button for the dialog."
+  {:attributes [:neutral-text :neutral-callback]}
+  [^AlertDialog$Builder builder,
+   {:keys [neutral-text neutral-callback]} _]
+  (.setNegativeButton builder (res/get-string neutral-text)
+                      (listeners/on-click-call neutral-callback)))
 
-(extend-type FunctionalAlertDialogBuilder
-  AlertDialogBuilder
-  (create [this]
-    {:post [(instance? android.app.AlertDialog %)]}
-    (.create ^AlertDialog$Builder (get-builder-object this)))
+(defelement :alert-dialog-builder
+  :classname AlertDialog$Builder
+  :inherits nil
+  :traits [:positive-button :negative-button :neutral-button])
 
-  (get-builder-object [this]
-    {:post [(instance? AlertDialog$Builder %)]}
-    (doto (AlertDialog$Builder. (.context this))
-      (.setCancelable (.cancellable this))
-      ))
-
-  (with-cancellation [this cancellable?]
-    {:post [(new-builder? this %)
-            (= (:cancellable %) cancellable?)]}
-    (assoc this :cancellable (boolean cancellable?)))
-  )
-
-(extend-type AlertDialog$Builder
-  AlertDialogBuilder
-  (create [this]
-    {:post [(instance? android.app.AlertDialog %)]}
-    (.create this))
-
-  (get-builder-object [this]
-    {:post [(identical? this %)]}
-    this)
-
-  (with-cancellation [this cancellable?]
-    {:post [(identical? this %)]}
-    (.setCancelable this (boolean cancellable?)))
-  )
-
-(defn new-builder
-  "Creates a new functional alert dialog builder."
-  []
-  {:post [(instance? FunctionalAlertDialogBuilder %)]}
-  (FunctionalAlertDialogBuilder. App/instance true))
+(defn ^AlertDialog$Builder alert-dialog-builder
+  "Creates a AlertDialog$Builder options with the given parameters."
+  [context options-map]
+  (neko.ui/make-ui context [:alert-dialog-builder options-map]))

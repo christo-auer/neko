@@ -243,8 +243,7 @@ Use (*a) to get the current activity."))
              `(defn ~(symbol (str prefix mname))
                 [~(vary-meta (first args) assoc :tag name)
                  ~@(rest args)]
-                ~@body
-                true))))))
+                ~@body))))))
 
 (defn get-state [^ActivityWithState activity]
   (.getState activity))
