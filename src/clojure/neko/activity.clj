@@ -1,7 +1,6 @@
 (ns neko.activity
   "Utilities to aid in working with an activity."
   (:require [clojure.string :as s]
-            neko.init
             [neko.ui :refer [make-ui]]
             [neko.debug :refer [all-activities safe-for-ui]]
             [neko.-utils :as u])
@@ -119,7 +118,6 @@ Use (*a) to get the current activity."))
              (.put all-activities '~(.name *ns*) ~'this)
              ~(when key
                 `(.put all-activities ~key ~'this))
-             (neko.init/init (.getApplicationContext ~'this))
              ~(when features
                 `(request-window-features! ~'this ~@features))
              (~on-create ~'this ~'savedInstanceState)))
@@ -238,7 +236,6 @@ Use (*a) to get the current activity."))
                  (.put all-activities '~(.name *ns*) ~'this)
                  ~(when key
                     `(.put all-activities ~key ~'this))
-                 (neko.init/init (.getApplicationContext ~'this))
                  ~(when features
                     `(request-window-features! ~'this ~@features))
                  (safe-for-ui ~@body))))

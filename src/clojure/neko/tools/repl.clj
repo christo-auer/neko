@@ -1,9 +1,10 @@
 (ns neko.tools.repl
-  (:require neko.log)
+  (:require [neko.log :as log])
   (:import android.content.Context
+           android.util.Log
+           java.io.FileNotFoundException
            java.util.concurrent.atomic.AtomicLong
-           java.util.concurrent.ThreadFactory
-           java.io.FileNotFoundException))
+           java.util.concurrent.ThreadFactory))
 
 (def cider-middleware
   "A vector containing all CIDER middleware."
@@ -20,7 +21,9 @@
     cider.nrepl.middleware.trace/wrap-trace
     cider.nrepl.middleware.undef/wrap-undef])
 
-(defn cider-available? []
+(defn cider-available?
+  "Checks if cider-nrepl dependency is present on the classpath."
+  []
   (try (require 'cider.nrepl.version)
        true
        (catch FileNotFoundException e false)))
@@ -38,17 +41,22 @@
                        1048576) ;; Hardcoded stack size of 1Mb
           (.setDaemon true))))))
 
-(defmacro stubify [ns-sym & empty-fns]
-  `(let [curr-ns# (ns-name *ns*)]
-     (ns ~ns-sym)
-     ~@(map (fn [f] `(defn ~f [~'& ~'_])) empty-fns)
-     (in-ns curr-ns#)))
-
 (defn- patch-unsupported-dependencies
   "Some non-critical CIDER and nREPL dependencies cannot be used on Android
   as-is, so they have to be tranquilized."
   []
-  (stubify dynapath.util add-classpath! addable-classpath))
+  (let [curr-ns (ns-name *ns*)]
+    (ns dynapath.util)
+    (defn add-classpath! [& _])
+    (defn addable-classpath [& _])
+    (in-ns curr-ns)))
+
+(defn enable-compliment-sources
+  "Initializes compliment sources if their namespaces are present."
+  []
+  (try (require 'neko.compliment.ui-widgets-and-attributes)
+       ((resolve 'neko.compliment.ui-widgets-and-attributes/init-source))
+       (catch Exception ex nil)))
 
 (defn start-repl
   "Starts a remote nREPL server. Creates a `user` namespace because nREPL
@@ -73,7 +81,7 @@
 
 (defmacro start-nrepl-server
   "Expands into nREPL server initialization if conditions are met."
-  [port other-args]
+  [args]
   (when (or (not (:neko.init/release-build *compiler-options*))
             (:neko.init/start-nrepl-server *compiler-options*))
     (let [build-port (:neko.init/nrepl-port *compiler-options*)
@@ -81,8 +89,14 @@
                   (list `quote
                         (or (:neko.init/nrepl-middleware *compiler-options*)
                             cider-middleware)))]
-      `(let [port# (or ~port ~build-port 9999)]
-         (try (apply start-repl ~mware :port port# ~other-args)
+      `(let [port# (or ~(:port args) ~build-port 9999)
+             args# (assoc ~args :port port#)]
+         (try (apply start-repl ~mware (mapcat identity args#))
               (neko.log/i "Nrepl started at port" port#)
               (catch Exception ex#
                 (neko.log/e "Failed to start nREPL" :exception ex#)))))))
+
+(defn init
+  "Entry point to neko.tools.repl namespace from Java code."
+  [& {:as args}]
+  (start-nrepl-server args))
