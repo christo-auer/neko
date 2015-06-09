@@ -17,6 +17,12 @@
            (def ~fn-name (memoize ~fn-name))
            (reset-meta! (var ~fn-name) meta#)))))
 
+(defn int-id
+  "Makes an ID from arbitrary object by calling .hashCode on it.
+  Returns the absolute value."
+  [obj]
+  (Math/abs (.hashCode ^Object obj)))
+
 (defn simple-name
   "Takes a possibly package-qualified class name symbol and returns a
   simple class name from it."

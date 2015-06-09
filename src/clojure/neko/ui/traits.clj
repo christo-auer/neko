@@ -5,8 +5,8 @@
             [neko.listeners.view :as view-listeners]
             [neko.listeners.text-view :as text-view-listeners]
             [neko.listeners.adapter-view :as adapter-view]
-            neko.listeners.search-view)
-  (:use [neko.-utils :only [memoized]])
+            neko.listeners.search-view
+            [neko.-utils :refer [memoized int-id]])
   (:import [android.widget LinearLayout$LayoutParams ListView TextView SearchView
             ImageView RelativeLayout RelativeLayout$LayoutParams
             AbsListView$LayoutParams FrameLayout$LayoutParams Gallery$LayoutParams]
@@ -113,14 +113,6 @@ next-level elements."
 
 (alter-meta! #'deftrait
              assoc :arglists '([name docstring? param-map? [params*] body]))
-
-;; ## Utility functions
-
-(defn to-id
-  "Makes an ID from arbitrary object by calling .hashCode on it.
-  Returns the absolute value."
-  [obj]
-  (Math/abs (.hashCode ^Object obj)))
 
 ;; ## Implementation of different traits
 
@@ -295,7 +287,7 @@ next-level elements."
         (.addRule lp attr-id)))
     (doseq [[attr-name attr-id] (:with-id relative-layout-attributes)]
       (when (contains? attributes attr-name)
-        (.addRule lp attr-id (to-id (attr-name attributes)))))
+        (.addRule lp attr-id (int-id (attr-name attributes)))))
     (apply-margins-to-layout-params (.getContext wdg) lp attributes)
     (.setLayoutParams wdg lp)))
 
@@ -474,7 +466,7 @@ next-level elements."
   this tree, stores the widget in id-holder's tag (see docs for
   `:id-holder`trait)."
   [^View wdg, {:keys [id]} {:keys [^View id-holder]}]
-  (.setId wdg (to-id id))
+  (.setId wdg (int-id id))
   (when id-holder
     (.put ^HashMap (.getTag id-holder) id wdg)))
 

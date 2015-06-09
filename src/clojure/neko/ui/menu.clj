@@ -3,8 +3,8 @@
   Intended to replace XML-based menu layouts."
   (:require [neko.ui :as ui]
             [neko.ui.mapping :refer [defelement]]
-            [neko.ui.traits :refer [deftrait to-id]]
-            [neko.-utils :refer [call-if-nnil]])
+            [neko.ui.traits :refer [deftrait]]
+            [neko.-utils :refer [call-if-nnil int-id]])
   (:import [android.view Menu MenuItem]
            [android.view View ActionMode$Callback]
            android.app.Activity))
@@ -32,8 +32,8 @@
   ([menu group tree]
      (doseq [[element-kw attributes & subelements] tree
              :when element-kw]
-       (let [id (to-id (or (:id attributes) Menu/NONE))
-             order (to-id (or (:order attributes) Menu/NONE))]
+       (let [id (int-id (or (:id attributes) Menu/NONE))
+             order (int-id (or (:order attributes) Menu/NONE))]
          (case element-kw
            :group
            (make-menu menu id subelements)

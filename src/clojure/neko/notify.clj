@@ -1,5 +1,6 @@
 (ns neko.notify
   "Provides convenient wrappers for Toast and Notification APIs."
+  (:require [neko.-utils :refer [int-id]])
   (:import [android.app Notification NotificationManager PendingIntent]
            [android.content Context Intent]
            android.widget.Toast
@@ -59,7 +60,7 @@
    (fire App/instance id notification))
   ([context id notification]
    (let [id (if (keyword? id)
-              (Math/abs (.hashCode id))
+              (int-id id)
               id)]
      (.notify (notification-manager context) id notification))))
 
@@ -69,5 +70,5 @@
    (cancel App/instance id))
   ([context id]
    (.cancel (notification-manager context) (if (keyword? id)
-                                             (Math/abs (.hashCode id))
+                                             (int-id id)
                                              id))))
