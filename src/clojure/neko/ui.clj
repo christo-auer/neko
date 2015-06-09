@@ -3,7 +3,9 @@
   (:require [neko.ui.mapping :as kw]
             [neko.ui.traits :refer [apply-trait]]
             [neko.-utils :refer [keyword->setter reflect-setter
-                                 reflect-constructor]]))
+                                 reflect-constructor]])
+  (:import android.content.res.Configuration
+           neko.App))
 
 ;; ## Attributes
 
@@ -107,3 +109,16 @@
       (from activity)
       (inflate ^Integer id nil)))
 
+;; ## Utilities
+
+(defn get-screen-orientation
+  "Returns either :portrait, :landscape, :square, or :undefined depending on the
+  current orientation of the device."
+  ([]
+   (get-screen-orientation App/instance))
+  ([context]
+   (condp = (.. context (getResources) (getConfiguration) orientation)
+     Configuration/ORIENTATION_PORTRAIT :portrait
+     Configuration/ORIENTATION_LANDSCAPE :landscape
+     Configuration/ORIENTATION_SQUARE :square
+     :undefined)))
