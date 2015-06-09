@@ -1,5 +1,6 @@
 (ns neko.resource
   "Provides utilities to resolve application resources."
+  (:require [neko.-utils :refer [app-package-name]])
   (:import android.content.Context
            android.graphics.drawable.Drawable
            neko.App))
@@ -9,13 +10,14 @@
   into the current namespace."
   []
   `(do ~@(map (fn [res-type]
-                `(try (import '~(-> (:neko.init/package-name *compiler-options*)
+                `(try (import '~(-> (app-package-name)
                                     (str ".R$" res-type)
                                     symbol))
                       (catch ClassNotFoundException _# nil)))
               '[anim drawable color layout menu string array plurals style id
                 dimen])))
 
+(import-all)
 ;; ## Runtime resource resolution
 
 (defn get-string

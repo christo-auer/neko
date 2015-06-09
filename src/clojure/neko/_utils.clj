@@ -3,6 +3,11 @@
   (:require [clojure.string :as string])
   (:import [java.lang.reflect Method Constructor Field]))
 
+(defmacro app-package-name
+  "Allows other macros to hard-compile the name of application package in them."
+  []
+  (:neko.init/package-name *compiler-options*))
+
 (defmacro memoized
   "Takes a `defn` definition and memoizes it preserving its metadata."
   [func-def]

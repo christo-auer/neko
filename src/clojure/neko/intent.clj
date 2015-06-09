@@ -1,4 +1,5 @@
 (ns neko.intent
+  "Utilities to create Intent objects."
   (:require [neko.-utils :refer [app-package-name]])
   (:import [android.content Context Intent]
            android.os.Bundle))
