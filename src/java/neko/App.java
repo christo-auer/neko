@@ -1,15 +1,16 @@
 package neko;
 
+import android.app.Application;
 import android.util.Log;
 import clojure.java.api.Clojure;
 import clojure.lang.DalvikDynamicClassLoader;
 import clojure.lang.Var;
 import clojure.lang.IFn;
 
-public class App extends android.app.Application {
+public class App extends Application {
 
     private static String TAG = "neko.App";
-    public static App instance;
+    public static Application instance;
 
     @Override
     public void onCreate() {
