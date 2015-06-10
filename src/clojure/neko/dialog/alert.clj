@@ -21,7 +21,7 @@
   {:attributes [:positive-text :positive-callback]}
   [^AlertDialog$Builder builder,
    {:keys [positive-text positive-callback]} _]
-  (.setPositiveButton builder (res/get-string positive-text)
+  (.setPositiveButton builder (res/get-string (.getContext builder) positive-text)
                       (listeners/on-click-call positive-callback)))
 
 (deftrait :negative-button
@@ -31,7 +31,7 @@
   {:attributes [:negative-text :negative-callback]}
   [^AlertDialog$Builder builder,
    {:keys [negative-text negative-callback]} _]
-  (.setNegativeButton builder (res/get-string negative-text)
+  (.setNegativeButton builder (res/get-string (.getContext builder) negative-text)
                       (listeners/on-click-call negative-callback)))
 
 (deftrait :neutral-button
@@ -41,7 +41,7 @@
   {:attributes [:neutral-text :neutral-callback]}
   [^AlertDialog$Builder builder,
    {:keys [neutral-text neutral-callback]} _]
-  (.setNegativeButton builder (res/get-string neutral-text)
+  (.setNegativeButton builder (res/get-string (.getContext builder) neutral-text)
                       (listeners/on-click-call neutral-callback)))
 
 (defelement :alert-dialog-builder
