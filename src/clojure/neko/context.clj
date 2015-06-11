@@ -14,6 +14,6 @@
    `(get-service neko.App/instance ~type))
   ([context type]
    `(.getSystemService
-     ^Context context
+     ^Context ~context
      ~(symbol (str (.getName Context) "/"
                    (u/keyword->static-field (name type)) "_SERVICE")))))
