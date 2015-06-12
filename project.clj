@@ -7,6 +7,9 @@
   :source-paths ["src" "src/clojure"]
   :java-source-paths ["src/java"]
 
+  :repositories [["maven-snapshots" {:id "oss.sonatype"
+                                     :url "https://oss.sonatype.org/content/repositories/snapshots"}]]
+  
   :plugins [[lein-droid "0.4.0-alpha3"]]
 
   :profiles {:default [:android-common]
