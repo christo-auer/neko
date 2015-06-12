@@ -20,7 +20,11 @@
                               [venantius/ultra "0.3.3"]]
                :android {:aot [#"neko.t-.+" #"neko.data.t-.+" #"neko.listeners.t-.+"
                                "ultra.test"]
-                         :build-type :release}}]}
+                         :build-type :release}}]
+
+             :travis
+             [:local-testing
+              {:android {:sdk-path "/usr/local/android-sdk/"}}]}
 
 
   :android {:library true
