@@ -9,7 +9,7 @@
 
   :repositories [["maven-snapshots" {:id "oss.sonatype"
                                      :url "https://oss.sonatype.org/content/repositories/snapshots"}]]
-  
+
   :plugins [[lein-droid "0.4.0-alpha3"]]
 
   :profiles {:default [:android-common]
@@ -19,7 +19,7 @@
               {:target-path "target/local-testing"
                :dependencies [[junit/junit "4.12"]
                               [org.robolectric/robolectric "3.0-SNAPSHOT"]
-                              [org.clojure-android/droid-test "0.1.0"]
+                              [org.clojure-android/droid-test "0.1.1-SNAPSHOT"]
                               [venantius/ultra "0.3.3"]]
                :android {:aot [#"neko.t-.+" #"neko.data.t-.+" #"neko.listeners.t-.+"
                                "ultra.test"]
@@ -27,7 +27,13 @@
 
              :travis
              [:local-testing
-              {:android {:sdk-path "/usr/local/android-sdk/"}}]}
+              {:dependencies [[cloverage "1.0.5"]]
+               :aliases {"coverage" ["do" ["droid" "local-test" "cloverage"]
+                                     ["shell" "curl" "-F"
+                                      "json_file=@target/coverage/coveralls.json"
+                                      "https://coveralls.io/api/v1/jobs"]]}
+               :android {:sdk-path "/usr/local/android-sdk/"
+                         :aot ["cloverage.coverage"]}}]}
 
 
   :android {:library true
