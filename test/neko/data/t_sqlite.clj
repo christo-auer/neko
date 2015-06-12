@@ -23,14 +23,15 @@
   (def helper (db/create-helper (Activity.) schema))
   (def db (db/get-database helper :write))
 
-  (db/transact db
-    (db/insert db :employees {:name "Shelley Levene"
-                              :vacation false
-                              :certificate (.getBytes "quick brown fox")})
-    (db/insert db :employees {:name "Dave Moss"
-                              :vacation false})
-    (db/insert db :employees {:name "Ricky Roma"
-                              :vacation false}))
+  (db/transact*
+   db (fn []
+        (db/insert db :employees {:name "Shelley Levene"
+                                  :vacation false
+                                  :certificate (.getBytes "quick brown fox")})
+        (db/insert db :employees {:name "Dave Moss"
+                                  :vacation false})
+        (db/insert db :employees {:name "Ricky Roma"
+                                  :vacation false})))
 
   (is (= () (db/query-seq db :employees {:vacation true})))
 
@@ -61,5 +62,3 @@
 
   (is (= "Shelley Levene" (db/query-scalar db :name :employees {:_id 1})))
   (is (= 4 (db/query-scalar db ["count" :_id] :employees nil))))
-
-

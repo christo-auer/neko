@@ -284,14 +284,17 @@
            (map-to-content tagged-db table-name data-map)))
 (def db-insert insert)
 
+(defn transact*
+  "Executed nullary transact-fn in a transaction for batch query execution."
+  [^TaggedDatabase tagged-db, transact-fn]
+  (let [^SQLiteDatabase db (.db tagged-db)]
+    (try (.beginTransaction db)
+         (transact-fn)
+         (.setTransactionSuccessful db)
+         (finally (.endTransaction db)))))
+
 (defmacro transact
   "Wraps the code in beginTransaction-endTransaction calls for batch query
   execution."
-  [db & body]
-  (let [db-sym (with-meta (gensym "db")
-                 {:tag "android.database.sqlite.SQLiteDatabase"})]
-    `(let [~db-sym (.db ~(with-meta db {:tag "neko.data.sqlite.TaggedDatabase"}))]
-       (try (.beginTransaction ~db-sym)
-            ~@body
-            (.setTransactionSuccessful ~db-sym)
-            (finally (.endTransaction ~db-sym))))))
+  [tagged-db & body]
+  `(transact* ~tagged-db (fn [] ~@body)))
