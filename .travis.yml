@@ -13,5 +13,5 @@ android:
     - android-18
 lein: ~/bin/lein
 script:
-  - lein with-profile travis droid local-test
+  - DEBUG=1 lein with-profile travis droid local-test
   - lein with-profile travis coverage
