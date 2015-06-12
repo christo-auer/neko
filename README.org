@@ -1,4 +1,4 @@
-* [[https://raw.githubusercontent.com/clojure-android/neko/master/doc/big_logo.png]]
+* [[https://raw.githubusercontent.com/clojure-android/neko/master/doc/big_logo.png]] [[https://travis-ci.org/clojure-android/neko/][https://travis-ci.org/clojure-android/neko.svg?branch=master]]
 
   Neko is a toolkit designed to make Android development using Clojure easier
   and more fun. It provides different facilities that wrap Android's Java API
