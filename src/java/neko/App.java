@@ -1,11 +1,12 @@
 package neko;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 import clojure.java.api.Clojure;
-import clojure.lang.DalvikDynamicClassLoader;
 import clojure.lang.Var;
 import clojure.lang.IFn;
+import java.lang.reflect.Method;
 
 public class App extends Application {
 
@@ -15,7 +16,15 @@ public class App extends Application {
     @Override
     public void onCreate() {
         instance = this;
-        DalvikDynamicClassLoader.setContext(this);
+        try {
+            Class dalvikCLclass = Class.forName("clojure.lang.DalvikDynamicClassLoader");
+            Method setContext = dalvikCLclass.getMethod("setContext", Context.class);
+            setContext.invoke(null, this);
+        } catch (ClassNotFoundException e) {
+            Log.i(TAG, "DalvikDynamicClassLoader is not found, probably Skummet is used.");
+        } catch (Exception e) {
+            Log.e(TAG, "setContext method not found, check if your Clojure dependency is correct.");
+        }
     }
 
     // This method is only necessary for asynchronous loading. Clojure is
