@@ -206,7 +206,7 @@ Use (*a) to get the current activity."))
           :state "state"
           :extends ~(or extends Activity)
           :implements ~(conj implements neko.ActivityWithState)
-          :overrides-methods ~(keys methods)
+          :overrides-methods ~(conj (keys methods) 'getState)
           :exposes-methods {~'onCreate ~'superOnCreate
                             ~'onStart ~'superOnStart
                             ~'onRestart ~'superOnRestart
