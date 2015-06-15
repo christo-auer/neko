@@ -22,7 +22,8 @@
                     :relative-layout-params :listview-layout-params
                     :frame-layout-params :gallery-layout-params]
            :value-namespaces
-           {:gravity android.view.Gravity}}
+           {:gravity android.view.Gravity
+            :visibility android.view.View}}
     :view-group {:inherits :view
                  :traits [:container :id-holder]}
     :button {:classname android.widget.Button
