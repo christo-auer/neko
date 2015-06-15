@@ -30,7 +30,7 @@
                                   [(first args) (rest args)]
                                   [App/instance args])
         [res-id & format-args] args]
-    (cond (string? res-id) res-id
+    (cond (not (number? res-id)) res-id
           format-args      (.getString context res-id (to-array format-args))
           :else            (.getString context res-id))))
 
@@ -41,6 +41,6 @@
    (get-drawable App/instance res-id))
 
   ([^Context context, res-id]
-   (if (instance? Drawable res-id)
+   (if-not (number? res-id)
      res-id
      (.getDrawable (.getResources context) res-id))))
