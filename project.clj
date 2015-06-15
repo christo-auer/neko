@@ -1,4 +1,4 @@
-(defproject neko "4.0.0-SNAPSHOT"
+(defproject neko "4.0.0-alpha1"
   :description "Neko is a toolkit designed to make Android development using Clojure easier and more fun."
   :url "https://github.com/clojure-android/neko"
   :license {:name "Eclipse Public License"
