@@ -5,11 +5,11 @@
             [neko.listeners.view :as view-listeners]
             [neko.listeners.text-view :as text-view-listeners]
             [neko.listeners.adapter-view :as adapter-view]
-            neko.listeners.search-view)
-  (:use [neko.-utils :only [memoized]])
+            neko.listeners.search-view
+            [neko.-utils :refer [memoized int-id]])
   (:import [android.widget LinearLayout$LayoutParams ListView TextView SearchView
             ImageView RelativeLayout RelativeLayout$LayoutParams
-            AbsListView$LayoutParams]
+            AbsListView$LayoutParams FrameLayout$LayoutParams Gallery$LayoutParams]
            [android.view View ViewGroup$LayoutParams
             ViewGroup$MarginLayoutParams]
            android.graphics.Bitmap android.graphics.drawable.Drawable
@@ -114,14 +114,6 @@ next-level elements."
 (alter-meta! #'deftrait
              assoc :arglists '([name docstring? param-map? [params*] body]))
 
-;; ## Utility functions
-
-(defn to-id
-  "Makes an ID from arbitrary object by calling .hashCode on it.
-  Returns the absolute value."
-  [obj]
-  (Math/abs (.hashCode ^Object obj)))
-
 ;; ## Implementation of different traits
 
 ;; ### Def attribute
@@ -138,10 +130,10 @@ next-level elements."
 ;; ### Basic traits
 
 (deftrait :text
-  "Sets widget's text to a string, integer ID or a keyword
-  representing the string resource provided to `:text` attribute."
+  "Sets widget's text to a string or a resource ID representing a string
+  resource provided to `:text` attribute."
   [^TextView wdg, {:keys [text] :or {text ""}} _]
-  (.setText wdg ^CharSequence (res/get-string text)))
+  (.setText wdg ^CharSequence (res/get-string (.getContext wdg) text)))
 
 (defn- kw->unit-id [unit-kw]
   (case unit-kw
@@ -183,7 +175,6 @@ next-level elements."
   (condp instance? image
     Bitmap (.setImageBitmap wdg image)
     Drawable (.setImageDrawable wdg image)
-    Keyword (.setImageDrawable wdg (neko.resource/get-drawable image))
     Uri (.setImageURI wdg image)
     ;; Otherwise assume `image` to be resource ID.
     (.setImageResource wdg image)))
@@ -214,8 +205,7 @@ next-level elements."
                         (to-dimension (.getContext wdg)))
         ^int height (->> (or layout-height :wrap)
                          (kw/value :layout-params)
-                         (to-dimension (.getContext wdg)))
-        lp (RelativeLayout$LayoutParams. width height)]
+                         (to-dimension (.getContext wdg)))]
     (.setLayoutParams wdg (ViewGroup$LayoutParams. width height))))
 
 (deftrait :linear-layout-params
@@ -297,7 +287,7 @@ next-level elements."
         (.addRule lp attr-id)))
     (doseq [[attr-name attr-id] (:with-id relative-layout-attributes)]
       (when (contains? attributes attr-name)
-        (.addRule lp attr-id (to-id (attr-name attributes)))))
+        (.addRule lp attr-id (int-id (attr-name attributes)))))
     (apply-margins-to-layout-params (.getContext wdg) lp attributes)
     (.setLayoutParams wdg lp)))
 
@@ -317,6 +307,43 @@ next-level elements."
      wdg (if layout-view-type
            (AbsListView$LayoutParams. width height layout-view-type)
            (AbsListView$LayoutParams. width height)))))
+
+(deftrait :gallery-layout-params
+  {:attributes [:layout-width :layout-height]
+   :applies? (= container-type :gallery)}
+  [^View wdg, {:keys [layout-width layout-height]
+               :as attributes}
+   {:keys [container-type]}]
+  (let [^int width (->> (or layout-width :wrap)
+                        (kw/value :layout-params)
+                        (to-dimension (.getContext wdg)))
+        ^int height (->> (or layout-height :wrap)
+                         (kw/value :layout-params)
+                         (to-dimension (.getContext wdg)))]
+    (.setLayoutParams wdg (Gallery$LayoutParams. width height))))
+
+(deftrait :frame-layout-params
+  "Takes `:layout-width`, `:layout-height`, `:layout-gravity` and different
+  layout margin attributes and sets FrameLayout.LayoutParams if current
+  container is FrameLayout. Values could be either numbers of `:fill` or
+  `:wrap`." {:attributes (concat margin-attributes [:layout-width :layout-height
+                                                    :layout-gravity])
+             :applies? (= container-type :frame-layout)}
+  [^View wdg, {:keys [layout-width layout-height layout-gravity]
+               :as attributes}
+   {:keys [container-type]}]
+  (let [^int width (->> (or layout-width :wrap)
+                        (kw/value :layout-params)
+                        (to-dimension (.getContext wdg)))
+        ^int height (->> (or layout-height :wrap)
+                         (kw/value :layout-params)
+                         (to-dimension (.getContext wdg)))
+        params (FrameLayout$LayoutParams. width height)]
+    (apply-margins-to-layout-params (.getContext wdg) params attributes)
+    (when layout-gravity
+      (set! (. params gravity)
+            (kw/value :layout-params layout-gravity :gravity)))
+    (.setLayoutParams wdg params)))
 
 (deftrait :padding
   "Takes `:padding`, `:padding-bottom`, `:padding-left`,
@@ -412,7 +439,7 @@ next-level elements."
   "Takes :on-editor-action attribute, which should be function
   of three arguments, and sets it as OnEditorAction for the
   TexView widget"
-  [^TextView wdg, {:keys [on-editor-action]}]
+  [^TextView wdg, {:keys [on-editor-action]} _]
   (.setOnEditorActionListener wdg (text-view-listeners/on-editor-action-call on-editor-action)))
 
 ;; ### ID storing traits
@@ -439,7 +466,7 @@ next-level elements."
   this tree, stores the widget in id-holder's tag (see docs for
   `:id-holder`trait)."
   [^View wdg, {:keys [id]} {:keys [^View id-holder]}]
-  (.setId wdg (to-id id))
+  (.setId wdg (int-id id))
   (when id-holder
     (.put ^HashMap (.getTag id-holder) id wdg)))
 

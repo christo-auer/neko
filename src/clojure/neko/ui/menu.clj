@@ -1,11 +1,11 @@
 (ns neko.ui.menu
   "Provides utilities for declarative options menu generation.
   Intended to replace XML-based menu layouts."
-  (:require [neko.context :as ctx]
-            [neko.ui :as ui])
-  (:use [neko.ui.mapping :only [defelement]]
-        [neko.ui.traits :only [deftrait to-id]]
-        [neko.-utils :only [call-if-nnil]])
+  (:require [neko.debug :refer [safe-for-ui]]
+            [neko.ui :as ui]
+            [neko.ui.mapping :refer [defelement]]
+            [neko.ui.traits :refer [deftrait]]
+            [neko.-utils :refer [call-if-nnil int-id]])
   (:import [android.view Menu MenuItem]
            [android.view View ActionMode$Callback]
            android.app.Activity))
@@ -33,8 +33,8 @@
   ([menu group tree]
      (doseq [[element-kw attributes & subelements] tree
              :when element-kw]
-       (let [id (to-id (or (:id attributes) Menu/NONE))
-             order (to-id (or (:order attributes) Menu/NONE))]
+       (let [id (int-id (or (:id attributes) Menu/NONE))
+             order (int-id (or (:order attributes) Menu/NONE))]
          (case element-kw
            :group
            (make-menu menu id subelements)
@@ -130,7 +130,7 @@
   [handler-fn]
   (reify android.view.MenuItem$OnMenuItemClickListener
     (onMenuItemClick [this item]
-      (handler-fn item)
+      (safe-for-ui (handler-fn item))
       true)))
 
 (defmacro on-menu-item-click
@@ -151,15 +151,14 @@
 ;; ### ActionView attribute
 
 (deftrait :action-view
-  "Takes `:action-view` attribute which should either be a View
-  instance or a UI definition tree, and sets it as an action view for
-  the menu item. For UI tree syntax see docs for `neko.ui/make-ui`.
-  Activity instance should be provided via `:context` attribute."
+  "Takes `:action-view` attribute which should either be a View instance or a UI
+  definition tree, and sets it as an action view for the menu item. For UI tree
+  syntax see docs for `neko.ui/make-ui`. Activity instance must be provided via
+  `:context` attribute."
   {:attributes [:action-view :context]
    :applies? (:action-view attrs)}
   [^MenuItem wdg, {:keys [action-view context] :as attrs} _]
   (let [view (if (instance? View action-view)
                action-view
-               (ui/make-ui-element (or context ctx/context)
-                                   action-view {:menu-item wdg}))]
+               (ui/make-ui-element context action-view {:menu-item wdg}))]
     (.setActionView wdg ^View view)))

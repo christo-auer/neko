@@ -3,6 +3,11 @@
   (:require [clojure.string :as string])
   (:import [java.lang.reflect Method Constructor Field]))
 
+(defmacro app-package-name
+  "Allows other macros to hard-compile the name of application package in them."
+  []
+  (:neko.init/package-name *compiler-options*))
+
 (defmacro memoized
   "Takes a `defn` definition and memoizes it preserving its metadata."
   [func-def]
@@ -11,6 +16,12 @@
          (let [meta# (meta (var ~fn-name))]
            (def ~fn-name (memoize ~fn-name))
            (reset-meta! (var ~fn-name) meta#)))))
+
+(defn int-id
+  "Makes an ID from arbitrary object by calling .hashCode on it.
+  Returns the absolute value."
+  [obj]
+  (Math/abs (.hashCode ^Object obj)))
 
 (defn simple-name
   "Takes a possibly package-qualified class name symbol and returns a
