@@ -140,7 +140,7 @@
              `(defn ~(symbol (str prefix mname))
                 [~(vary-meta (first args) assoc :tag name)
                  ~@(rest args)]
-                ~@body))))))
+                (safe-for-ui ~@body)))))))
 
 (defn get-state [^ActivityWithState activity]
   (.getState activity))
