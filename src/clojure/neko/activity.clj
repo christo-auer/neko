@@ -51,113 +51,6 @@
           ~activity ~(symbol (str (.getName Window) "/FEATURE_"
                                   (u/keyword->static-field (name feat))))))])
 
-(defmacro old-defactivity
-  "Creates an activity with the given full package-qualified name.
-  Optional arguments should be provided in a key-value fashion.
-
-  Available optional arguments:
-
-  :extends, :implements, :prefix - same as for `gen-class`.
-
-  :features - window features to be requested for the activity.
-  Relevant only if :create is used.
-
-  :on-create - takes a two-argument function. Generates a handler for
-  activity's `onCreate` event which automatically calls the
-  superOnCreate method and creates a var with the name denoted by
-  `:def` (or activity's lower-cased name by default) to store the
-  activity object. Then calls the provided function onto the
-  Application object.
-
-  :on-start, :on-restart, :on-resume, :on-pause, :on-stop, :on-destroy
-  - same as :on-create but require a one-argument function."
-  [name & {:keys [extends implements prefix on-create on-create-options-menu
-                  on-options-item-selected on-activity-result
-                  on-new-intent def state key features]
-           :as options}]
-  (let [options (or options {}) ;; Handle no-options case
-        sname (u/simple-name name)
-        prefix (or prefix (str sname "-"))
-        state (or state `(atom {}))]
-    (when def
-      (println "WARNING: :def attribute in defactivity is deprecated.
-Use (*a) to get the current activity."))
-    `(do
-       (gen-class
-        :name ~name
-        :main false
-        :prefix ~prefix
-        ~@(when state
-            '(:init "init" :state "state"))
-        :extends ~(or extends Activity)
-        :implements ~implements
-        :exposes-methods {~'onCreate ~'superOnCreate
-                          ~'onStart ~'superOnStart
-                          ~'onRestart ~'superOnRestart
-                          ~'onResume ~'superOnResume
-                          ~'onPause ~'superOnPause
-                          ~'onStop ~'superOnStop
-                          ~'onCreateContextMenu ~'superOnCreateContextMenu
-                          ~'onContextItemSelected ~'superOnContextItemSelected
-                          ~'onCreateOptionsMenu ~'superOnCreateOptionsMenu
-                          ~'onOptionsItemSelected ~'superOnOptionsItemSelected
-                          ~'onActivityResult ~'superOnActivityResult
-                          ~'onNewIntent ~'superOnNewIntent
-                          ~'onDestroy ~'superOnDestroy})
-       ~(when state
-          `(defn ~(symbol (str prefix "init"))
-             [] [[] ~state]))
-       ~(when on-create
-          `(defn ~(symbol (str prefix "onCreate"))
-             [~(vary-meta 'this assoc :tag name),
-              ^android.os.Bundle ~'savedInstanceState]
-             (.superOnCreate ~'this ~'savedInstanceState)
-             ~(when (and (not (:neko.init/release-build *compiler-options*))
-                         def)
-                `(def ~(vary-meta def assoc :tag name) ~'this))
-             (.put all-activities '~(.name *ns*) ~'this)
-             ~(when key
-                `(.put all-activities ~key ~'this))
-             ~(when features
-                `(request-window-features! ~'this ~@features))
-             (~on-create ~'this ~'savedInstanceState)))
-       ~(when on-create-options-menu
-          `(defn ~(symbol (str prefix "onCreateOptionsMenu"))
-             [~(vary-meta 'this assoc :tag name),
-              ^android.view.Menu ~'menu]
-             (.superOnCreateOptionsMenu ~'this ~'menu)
-             (~on-create-options-menu ~'this ~'menu)
-             true))
-       ~(when on-options-item-selected
-          `(defn ~(symbol (str prefix "onOptionsItemSelected"))
-             [~(vary-meta 'this assoc :tag name),
-              ^android.view.MenuItem ~'item]
-             (~on-options-item-selected ~'this ~'item)
-             true))
-       ~(when on-activity-result
-          `(defn ~(symbol (str prefix "onActivityResult"))
-             [~(vary-meta 'this assoc :tag name),
-              ^int ~'requestCode,
-              ^int ~'resultCode,
-              ^android.content.Intent ~'intent]
-             (.superOnActivityResult ~'this ~'requestCode ~'resultCode ~'intent)
-             (~on-activity-result ~'this ~'requestCode ~'resultCode ~'intent)))
-       ~(when on-new-intent
-          `(defn ~(symbol (str prefix "onNewIntent"))
-             [~(vary-meta 'this assoc :tag name),
-              ^android.content.Intent ~'intent]
-             (.superOnNewIntent ~'this ~'intent)
-             (~on-new-intent ~'this ~'intent)))
-       ~@(map #(let [func (options %)
-                     event-name (u/keyword->camelcase %)]
-                 (when func
-                   `(defn ~(symbol (str prefix event-name))
-                      [~(vary-meta 'this assoc :tag name)]
-                      (~(symbol (str ".super" (u/capitalize event-name))) ~'this)
-                      (~func ~'this))))
-              [:on-start :on-restart :on-resume
-               :on-pause :on-stop :on-destroy]))))
-
 (defmacro ^{:forms '[name & options & methods]} defactivity
   "Creates an activity with the given full package-qualified name.
   Optional arguments should be provided in a key-value fashion.
@@ -180,7 +73,11 @@ Use (*a) to get the current activity."))
   - same as :on-create but require a one-argument function."
   [name & args]
   (if (some #{:on-create} args)
-    `(old-defactivity name ~@args)
+    (throw
+     (RuntimeException.
+      (str "ERROR: This syntax of defactivity is deprecated, please "
+           "update it to the new syntax: "
+           "https://github.com/clojure-android/neko/wiki/Namespaces#defining-an-activity")))
     (let [[{:keys [extends implements prefix state key features]} methods]
           (loop [args args, options {}, methods {}]
             (cond (empty? args) [options methods]
