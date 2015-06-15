@@ -3,7 +3,7 @@ package neko;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-import clojure.java.api.Clojure;
+import clojure.lang.RT;
 import clojure.lang.Var;
 import clojure.lang.IFn;
 import java.lang.reflect.Method;
@@ -31,11 +31,16 @@ public class App extends Application {
     // perfectly capable of loading itself the first time anything from it is
     // called.
     public static void loadClojure() {
-        IFn require = Clojure.var("clojure.core", "require");
-        require.invoke(Clojure.read("neko.tools.repl"));
+        IFn load = (IFn)RT.var("clojure.core", "load");
+        load.invoke("/neko/activity");
 
-        IFn init = Clojure.var("neko.tools.repl", "init");
-        init.invoke();
+        try {
+            load.invoke("/neko/tools/repl");
+            IFn init = (IFn)RT.var("neko.tools.repl", "init");
+            init.invoke();
+        } catch (Exception e) {
+            Log.i(TAG, "Could not find neko.tools.repl, probably Skummet is used.");
+        }
     }
 
     public static void loadAsynchronously(final String activityClass, final Runnable callback) {
