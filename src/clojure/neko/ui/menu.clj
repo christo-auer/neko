@@ -1,7 +1,8 @@
 (ns neko.ui.menu
   "Provides utilities for declarative options menu generation.
   Intended to replace XML-based menu layouts."
-  (:require [neko.ui :as ui]
+  (:require [neko.debug :refer [safe-for-ui]]
+            [neko.ui :as ui]
             [neko.ui.mapping :refer [defelement]]
             [neko.ui.traits :refer [deftrait]]
             [neko.-utils :refer [call-if-nnil int-id]])
@@ -129,7 +130,7 @@
   [handler-fn]
   (reify android.view.MenuItem$OnMenuItemClickListener
     (onMenuItemClick [this item]
-      (handler-fn item)
+      (safe-for-ui (handler-fn item))
       true)))
 
 (defmacro on-menu-item-click
