@@ -8,14 +8,23 @@
   []
   (:neko.init/package-name *compiler-options*))
 
-(defmacro memoized
-  "Takes a `defn` definition and memoizes it preserving its metadata."
-  [func-def]
-  (let [fn-name (second func-def)]
-    `(do ~func-def
-         (let [meta# (meta (var ~fn-name))]
-           (def ~fn-name (memoize ~fn-name))
-           (reset-meta! (var ~fn-name) meta#)))))
+(defmacro memoized [inside-defn]
+  (let [[_ name & fdecl] inside-defn
+        [m fdecl] (if (string? (first fdecl))
+                    [{:doc (first fdecl)} (next fdecl)]
+                    [{} fdecl])
+        [m fdecl] (if (map? (first fdecl))
+                    [(conj m (first fdecl)) (next fdecl)]
+                    [m fdecl])
+        fdecl (if (vector? (first fdecl))
+                (list fdecl)
+                fdecl)
+        [m fdecl] (if (map? (last fdecl))
+                    [(conj m (last fdecl)) (butlast fdecl)]
+                    [m fdecl])
+        m (conj (if (meta name) (meta name) {}) m)]
+    `(def ~(with-meta name m)
+       (memoize (fn ~@fdecl)))))
 
 (defn int-id
   "Makes an ID from arbitrary object by calling .hashCode on it.
