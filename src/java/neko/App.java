@@ -2,6 +2,7 @@ package neko;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 import clojure.lang.RT;
 import clojure.lang.Var;
@@ -62,6 +63,12 @@ public class App extends Application {
                    "ClojureLoadingThread",
                    1048576 // = 1MB, thread stack size in bytes
                    ).start();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
 }

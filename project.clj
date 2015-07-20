@@ -3,14 +3,15 @@
   :url "https://github.com/clojure-android/neko"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure-android/clojure "1.7.0-beta3-r2"]]
-  :source-paths ["src" "src/clojure"]
-  :java-source-paths ["src/java"]
 
   :repositories [["maven-snapshots" {:id "oss.sonatype"
                                      :url "https://oss.sonatype.org/content/repositories/snapshots"}]]
-
+  :dependencies [[org.clojure-android/clojure "1.7.0-beta3-r2"]
+                 [com.android.support/multidex "1.0.0" :extension "aar"]]
   :plugins [[lein-droid "0.4.0-SNAPSHOT"]]
+
+  :source-paths ["src" "src/clojure"]
+  :java-source-paths ["src/java"]
 
   :profiles {:default [:android-common]
 
