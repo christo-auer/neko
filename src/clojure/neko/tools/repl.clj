@@ -9,7 +9,6 @@
 (def cider-middleware
   "A vector containing all CIDER middleware."
   '[cider.nrepl.middleware.apropos/wrap-apropos
-    cider.nrepl.middleware.classpath/wrap-classpath
     cider.nrepl.middleware.complete/wrap-complete
     cider.nrepl.middleware.info/wrap-info
     cider.nrepl.middleware.inspect/wrap-inspect
@@ -68,6 +67,11 @@
     (refer-clojure)
     (patch-unsupported-dependencies)
     (use 'clojure.tools.nrepl.server)
+    ;; Hack nREPL version to avoid CIDER complaining about it.
+    (require 'clojure.tools.nrepl)
+    (alter-var-root (resolve 'clojure.tools.nrepl/version)
+                    (constantly {:version-string "0.2.10", :qualifier "",
+                                 :incremental "10", :minor "2", :major "0"}))
     (require '[clojure.tools.nrepl.middleware.interruptible-eval :as ie])
     (with-redefs-fn {(resolve 'ie/configure-thread-factory)
                      android-thread-factory}
