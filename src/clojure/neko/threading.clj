@@ -36,4 +36,4 @@
   "Causes the macro body to be added to the message queue.  It will execute on
   the UI thread.  Returns true if successfully placed in the message queue."
   [view millis & body]
-  `(.postDelayed ^View ~view ~millis (fn [] ~@body)))
+  `(.postDelayed ^View ~view (fn [] ~@body) ~millis))
