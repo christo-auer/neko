@@ -1,13 +1,17 @@
 (ns neko.t-activity
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer :all :exclude [deftest]]
             [neko.activity :refer [defactivity] :as a]
+            [neko.debug :as dbg]
             [neko.ui :as ui]
+            [neko.helper :refer [deftest]]
             [neko.find-view :refer [find-view]])
   (:import android.app.Activity
            android.os.Bundle
            android.view.View
+           neko.Helpers
            [android.widget LinearLayout TextView]
-           [org.robolectric Robolectric RuntimeEnvironment]))
+           [org.robolectric Robolectric RuntimeEnvironment]
+           [org.robolectric.util ActivityController ComponentController]))
 
 (def simple-ui [:linear-layout {:orientation :vertical}
                 [:text-view {:id ::tv
@@ -40,29 +44,54 @@
       (a/set-content-view! activity simple-ui)
       (is (= TextView (type (find-view activity ::tv)))))))
 
-(defactivity neko.TestActivity)
-
 (deftest request-window-features
   (testing "empty"
     (let [activity (make-activity)]
       (is (= [] (a/request-window-features! activity)))))
 
   (testing "one feature"
-    (defn -onCreate [this bundle]
-      (is (= [true] (a/request-window-features! this :progress))))
+    (defactivity neko.TestActivity
+      (onCreate [this bundle]
+        (.superOnCreate this bundle)
+        (is (= [true] (a/request-window-features! this :progress)))))
     (Robolectric/setupActivity neko.TestActivity))
 
   (testing "multiple features"
-    (defn -onCreate [this bundle]
-      (is (= [true true] (a/request-window-features! this :progress :no-title))))
+    (defactivity neko.TestActivity
+      (onCreate [this bundle]
+        (.superOnCreate this bundle)
+        (is (= [true true] (a/request-window-features! this :progress :no-title)))))
     (Robolectric/setupActivity neko.TestActivity)))
 
-(defactivity neko.DefActivity
-  :request-features [:no-title]
-
-  (onCreate [this bundle]
-    (.superOnCreate this bundle)
-    (is (instance? Activity this))))
+(definterface TestInterface
+  (ifaceMethod []))
 
 (deftest defactivity-tests
-  (Robolectric/setupActivity neko.DefActivity))
+  (defactivity neko.DefActivity
+    :implements [neko.t_activity.TestInterface]
+    :key :defact
+    :request-features [:no-title :progress]
+
+    (onCreate [this bundle]
+      (.superOnCreate this bundle)
+      (is (instance? Activity this))
+      (is (= this (get dbg/all-activities :defact)))
+      (is (= this (get dbg/all-activities 'neko.t-activity)))
+      (is (= {} @(a/get-state this)))
+      (swap! (a/get-state this) assoc :test "test"))
+
+    (onStart [this]
+      (.superOnStart this)
+      (is (= "test" (:test @(a/get-state this)))))
+
+    (onStop [this]
+      (.superOnStop this)
+      (is true))
+
+    (ifaceMethod [this]
+      (is true)))
+
+  (let [controller (-> (Robolectric/buildActivity neko.DefActivity)
+                       .setup .stop)
+        activity (Helpers/getActivity controller)]
+    (.ifaceMethod activity)))
