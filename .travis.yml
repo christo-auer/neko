@@ -11,6 +11,7 @@ android:
   components:
     - build-tools-18.1.1
     - android-18
+    - extra-android-m2repository
 lein: ~/bin/lein
 script:
   - DEBUG=1 lein with-profile travis droid local-test

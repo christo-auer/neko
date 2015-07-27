@@ -4,8 +4,6 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :repositories [["maven-snapshots" {:id "oss.sonatype"
-                                     :url "https://oss.sonatype.org/content/repositories/snapshots"}]]
   :dependencies [[org.clojure-android/clojure "1.7.0-beta3-r2"]
                  [com.android.support/multidex "1.0.0" :extension "aar"]]
   :plugins [[lein-droid "0.4.0-alpha5"]]
@@ -19,7 +17,7 @@
              [:android-common
               {:target-path "target/local-testing"
                :dependencies [[junit/junit "4.12"]
-                              [org.robolectric/robolectric "3.0-SNAPSHOT"]
+                              [org.robolectric/robolectric "3.0"]
                               [org.clojure-android/droid-test "0.1.1-SNAPSHOT"]
                               [venantius/ultra "0.3.3"]]
                :android {:aot [#"neko.t-.+" #"neko.data.t-.+" #"neko.listeners.t-.+"
