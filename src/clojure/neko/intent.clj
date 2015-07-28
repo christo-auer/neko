@@ -10,7 +10,7 @@
   [^Intent intent, extras-map]
   (doseq [[key value] extras-map
           :let [key (name key)]]
-    (case (type value)
+    (condp #(= % (type %2)) value
       ;; Non-reflection calls for the most frequent cases.
       Long (.putExtra intent key ^long value)
       Double (.putExtra intent key ^double value)
