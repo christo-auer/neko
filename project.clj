@@ -6,7 +6,7 @@
 
   :dependencies [[org.clojure-android/clojure "1.7.0-beta3-r2"]
                  [com.android.support/multidex "1.0.0" :extension "aar"]]
-  :plugins [[lein-droid "0.4.0-alpha5"]]
+  :plugins [[lein-droid "0.4.0-SNAPSHOT"]]
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]

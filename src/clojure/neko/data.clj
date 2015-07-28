@@ -22,7 +22,7 @@
         (.get bundle (name key))
         default)))
   (seq [this]
-    (map (fn [k] [k (.get bundle k)])
+    (map (fn [k] [(keyword k) (.get bundle k)])
          (.keySet bundle))))
 
 ;; This type wraps a HashMap just redirecting the calls to the
@@ -43,7 +43,7 @@
         (.get hmap (name key))
         default)))
   (seq [this]
-    (map (fn [k] [k (.get hmap k)])
+    (map (fn [k] [(keyword k) (.get hmap k)])
          (.keySet hmap))))
 
 (defprotocol MapLike
