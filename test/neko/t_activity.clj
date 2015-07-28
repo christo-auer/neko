@@ -8,7 +8,7 @@
   (:import android.app.Activity
            android.os.Bundle
            android.view.View
-           neko.Helpers
+           coa.droid_test.Helpers
            [android.widget LinearLayout TextView]
            [org.robolectric Robolectric RuntimeEnvironment]
            [org.robolectric.util ActivityController ComponentController]))
