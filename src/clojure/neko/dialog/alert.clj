@@ -41,8 +41,8 @@
   {:attributes [:neutral-text :neutral-callback]}
   [^AlertDialog$Builder builder,
    {:keys [neutral-text neutral-callback]} _]
-  (.setNegativeButton builder (res/get-string (.getContext builder) neutral-text)
-                      (listeners/on-click-call neutral-callback)))
+  (.setNeutralButton builder (res/get-string (.getContext builder) neutral-text)
+                     (listeners/on-click-call neutral-callback)))
 
 (defelement :alert-dialog-builder
   :classname AlertDialog$Builder
