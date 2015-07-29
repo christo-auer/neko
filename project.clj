@@ -13,16 +13,23 @@
 
   :profiles {:default [:android-common]
 
-             :local-testing
+             :robolectric
              [:android-common
-              {:target-path "target/local-testing"
-               :dependencies [[junit/junit "4.12"]
+              {:dependencies [[junit/junit "4.12"]
                               [org.robolectric/robolectric "3.0"]
                               [org.clojure-android/droid-test "0.1.1-SNAPSHOT"]
-                              [venantius/ultra "0.3.3"]]
-               :android {:aot [#"neko.t-.+" #"neko.data.t-.+" #"neko.listeners.t-.+"
-                               "ultra.test"]
-                         :build-type :release}}]
+                              [org.clojure/tools.nrepl "0.2.10"]]}]
+
+             :local-testing
+             [:robolectric
+              {:target-path "target/local-testing"
+               :dependencies [[venantius/ultra "0.3.3"]]
+               :android {:aot [#"neko.*\.t-.+" "ultra.test"]}}]
+
+             :local-repl
+             [:robolectric
+              {:target-path "target/local-repl"
+               :android {:aot :all-with-unused}}]
 
              :travis
              [:local-testing

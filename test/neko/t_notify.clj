@@ -11,6 +11,7 @@
 (set! App/instance RuntimeEnvironment/application)
 
 (deftest disguised-toast
+  (ShadowToast/reset)
   (is (= 0 (ShadowToast/shownToastCount)))
   (notify/toast RuntimeEnvironment/application "Disguised toast" :short)
   (notify/toast RuntimeEnvironment/application "Disguised toast" :long)

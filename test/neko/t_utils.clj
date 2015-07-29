@@ -31,8 +31,27 @@
   (is (= "setOnClickListener" (u/keyword->setter :on-click-listener)))
   (is (= "setPositiveButton" (u/keyword->setter :positive-button))))
 
+(deftest reflect-setter
+  (is (instance? java.lang.reflect.Method (u/reflect-setter String "indexOf" Integer/TYPE)))
+  (is (thrown? NoSuchMethodException (u/reflect-setter String "nonExisting" Integer/TYPE))))
+
 (deftest call-if-nnil
   (let [f nil]
     (is (not (u/call-if-nnil f 1 2))))
   (let [f +]
     (is (u/call-if-nnil f 1 2))))
+
+(u/memoized
+ (defn plus "Adds two numbers"
+   [x y]
+   (Thread/sleep 500)
+   (+ x y)))
+
+(deftest memoized
+  (let [a (System/currentTimeMillis)
+        _ (is (= 5 (plus 2 3)))
+        b (System/currentTimeMillis)
+        _ (is (= 5 (plus 2 3)))
+        c (System/currentTimeMillis)]
+    (is (< 300 (- b a)))
+    (is (> 100 (- c b)))))

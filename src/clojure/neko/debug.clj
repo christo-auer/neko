@@ -63,5 +63,3 @@
     nil
     `(.addFlags (.getWindow ~activity)
                 WindowManager$LayoutParams/FLAG_KEEP_SCREEN_ON)))
-
-

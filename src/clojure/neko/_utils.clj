@@ -9,20 +9,8 @@
   (:neko.init/package-name *compiler-options*))
 
 (defmacro memoized [inside-defn]
-  (let [[_ name & fdecl] inside-defn
-        [m fdecl] (if (string? (first fdecl))
-                    [{:doc (first fdecl)} (next fdecl)]
-                    [{} fdecl])
-        [m fdecl] (if (map? (first fdecl))
-                    [(conj m (first fdecl)) (next fdecl)]
-                    [m fdecl])
-        fdecl (if (vector? (first fdecl))
-                (list fdecl)
-                fdecl)
-        [m fdecl] (if (map? (last fdecl))
-                    [(conj m (last fdecl)) (butlast fdecl)]
-                    [m fdecl])
-        m (conj (if (meta name) (meta name) {}) m)]
+  (let [[_ name doc & fdecl] inside-defn
+        m (assoc (meta name) :doc doc)]
     `(def ~(with-meta name m)
        (memoize (fn ~@fdecl)))))
 
