@@ -1,16 +1,15 @@
 (ns neko.listeners.t-view
-  (:require [clojure.test :refer :all]
-            [neko.listeners.view :as l])
+  (:require [clojure.test :refer :all :exclude [deftest]]
+            [neko.listeners.view :as l]
+            [coa.droid-test :refer [deftest]])
   (:import [android.view KeyEvent MotionEvent]
            org.robolectric.RuntimeEnvironment
            neko.App))
 
 (defmacro test-listener [& body]
-  `(let [~'pr (promise)
-         ~'v (android.view.View. RuntimeEnvironment/application)
-         ~'called (fn [] (deliver ~'pr :success))]
-     ~@body
-     (is (= :success (deref ~'pr 1000 :fail)))))
+  `(let [~'v (android.view.View. RuntimeEnvironment/application)
+         ~'called (fn [] (is true))]
+     ~@body))
 
 (deftest on-click
   (test-listener

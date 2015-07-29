@@ -1,6 +1,6 @@
 (ns neko.t-threading
   (:require [clojure.test :refer :all]
-            [neko.helper :as helper]
+            [coa.droid-test :as dt]
             [neko.threading :as t])
   (:import android.view.View
            org.robolectric.RuntimeEnvironment
@@ -23,7 +23,7 @@
     (t/on-ui*
      (fn [] (is (t/on-ui-thread?))))))
 
-(helper/deftest post
+(dt/deftest post
   (let [pr (promise)]
     (t/post (View. RuntimeEnvironment/application)
             (is (t/on-ui-thread?))

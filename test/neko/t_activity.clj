@@ -3,8 +3,8 @@
             [neko.activity :refer [defactivity] :as a]
             [neko.debug :as dbg]
             [neko.ui :as ui]
-            [neko.helper :refer [deftest]]
-            [neko.find-view :refer [find-view]])
+            [neko.find-view :refer [find-view]]
+            [coa.droid-test :refer [deftest]])
   (:import android.app.Activity
            android.os.Bundle
            android.view.View
