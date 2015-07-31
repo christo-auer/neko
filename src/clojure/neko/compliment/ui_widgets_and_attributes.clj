@@ -68,7 +68,7 @@
           kw-mapping (mapping/get-keyword-mapping)
           attributes (:attributes (meta #'neko.ui.traits/apply-trait))]
       (cond (kw-mapping kw)
-            (doc/get-element-doc kw kw-mapping false)
+            (doc/get-element-doc kw (kw-mapping kw) false)
 
             (attributes kw)
             (->> (attributes kw)

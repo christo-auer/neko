@@ -4,18 +4,16 @@
             [neko.notify :as notify]
             [neko.-utils :as u])
   (:import android.app.Activity
-           [org.robolectric RuntimeEnvironment Shadows]
+           org.robolectric.Shadows
            org.robolectric.shadows.ShadowToast
            neko.App))
-
-(set! App/instance RuntimeEnvironment/application)
 
 (deftest disguised-toast
   (ShadowToast/reset)
   (is (= 0 (ShadowToast/shownToastCount)))
-  (notify/toast RuntimeEnvironment/application "Disguised toast" :short)
-  (notify/toast RuntimeEnvironment/application "Disguised toast" :long)
-  (notify/toast RuntimeEnvironment/application "Disguised toast" :long)
+  (notify/toast "Disguised toast" :short)
+  (notify/toast App/instance "Disguised toast" :long)
+  (notify/toast "Disguised toast" :long)
   (notify/toast (Activity.) "Disguised toast" :long)
   (is (= 4 (ShadowToast/shownToastCount))))
 
