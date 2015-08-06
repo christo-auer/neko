@@ -41,7 +41,8 @@
                                       "json_file=@target/coverage/coveralls.json"
                                       "https://coveralls.io/api/v1/jobs"]]}
                :android {:sdk-path "/usr/local/android-sdk/"
-                         :aot ["cloverage.coverage"]}}]}
+                         :aot ["cloverage.coverage"]
+                         :cloverage-exclude-ns ["neko.tools.repl"]}}]}
 
 
   :android {:library true

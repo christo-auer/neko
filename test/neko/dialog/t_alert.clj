@@ -35,7 +35,3 @@
     (.performClick (.getButton dialog DialogInterface/BUTTON_NEUTRAL))
     (.performClick (.getButton dialog DialogInterface/BUTTON_NEGATIVE))
     (is (not (.isShowing dialog)))))
-
-(map #(re-matches #"neko.*\.t-.+" %)
-     ["neko.threading" "neko.activity" "neko.data.alert" "neko.listeners.text-view"
-      "neko.t-threading" "neko.t-activity" "neko.data.t-alert" "neko.listeners.t-text-view"])
