@@ -93,7 +93,11 @@
 
           sname (u/simple-name name)
           prefix (or prefix (str sname "-"))
-          state (or state `(atom {}))]
+          extends (resolve (or extends 'Activity))
+          state (or state `(atom {}))
+          exposed-methods (if (:neko.init/release-build *compiler-options*)
+                            (map str (keys methods))
+                            (u/list-all-methods extends))]
       `(do
          (gen-class
           :name ~name
@@ -101,22 +105,16 @@
           :prefix ~prefix
           :init "init"
           :state "state"
-          :extends ~(or extends Activity)
+          :extends ~extends
           :implements ~(conj implements neko.ActivityWithState)
           :overrides-methods ~(conj (keys methods) 'getState)
-          :exposes-methods {~'onCreate ~'superOnCreate
-                            ~'onStart ~'superOnStart
-                            ~'onRestart ~'superOnRestart
-                            ~'onResume ~'superOnResume
-                            ~'onPause ~'superOnPause
-                            ~'onStop ~'superOnStop
-                            ~'onCreateContextMenu ~'superOnCreateContextMenu
-                            ~'onContextItemSelected ~'superOnContextItemSelected
-                            ~'onCreateOptionsMenu ~'superOnCreateOptionsMenu
-                            ~'onOptionsItemSelected ~'superOnOptionsItemSelected
-                            ~'onActivityResult ~'superOnActivityResult
-                            ~'onNewIntent ~'superOnNewIntent
-                            ~'onDestroy ~'superOnDestroy})
+          :exposes-methods
+          ~(->> exposed-methods
+                distinct
+                (map (fn [mname]
+                       [(symbol mname) (symbol (str "super" (u/capitalize mname)))]))
+                (into {})))
+
          ~`(defn ~(symbol (str prefix "init"))
              [] [[] ~state])
          ~`(defn ~(symbol (str prefix "getState"))

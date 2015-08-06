@@ -1,7 +1,7 @@
 (ns neko.-utils
   "Internal utilities used by Neko, not intended for external consumption."
   (:require [clojure.string :as string])
-  (:import [java.lang.reflect Method Constructor Field]))
+  (:import [java.lang.reflect Method Constructor Field Modifier]))
 
 (defmacro app-package-name
   "Allows other macros to hard-compile the name of application package in them."
@@ -114,3 +114,17 @@
   the field."
   [^Class widget-type, ^String field-name]
   (.get ^Field (.getDeclaredField widget-type field-name) nil))
+
+(defn list-all-methods
+  "Returns names of all non-private methods of a class, including methods
+  declared in its parents."
+  [^Class c]
+  (loop [c c, methods ()]
+    (if c
+      (recur (.getSuperclass c)
+             (concat methods
+                     (keep (fn [^Method m]
+                             (when-not (Modifier/isPrivate (.getModifiers m))
+                               (.getName m)))
+                           (.getDeclaredMethods c))))
+      methods)))
