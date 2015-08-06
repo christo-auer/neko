@@ -121,19 +121,15 @@
              [~(vary-meta 'this assoc :tag name)]
              (.state ~'this))
          ~(when-let [[mname args & body] (get methods 'onCreate)]
-            (let [[super-call body] (if (= (ffirst body) '.superOnCreate)
-                                      [(first body) (rest body)]
-                                      [nil body])]
-              `(defn ~(symbol (str prefix mname))
-                 [~(vary-meta (first args) assoc :tag name)
-                  ~(vary-meta (second args) assoc :tag android.os.Bundle)]
-                 ~super-call
-                 (.put all-activities '~(.name *ns*) ~'this)
-                 ~(when key
-                    `(.put all-activities ~key ~'this))
-                 ~(when features
-                    `(request-window-features! ~'this ~@features))
-                 (safe-for-ui ~@body))))
+            `(defn ~(symbol (str prefix mname))
+               [~(vary-meta (first args) assoc :tag name)
+                ~(vary-meta (second args) assoc :tag android.os.Bundle)]
+               (.put all-activities '~(.name *ns*) ~'this)
+               ~(when key
+                  `(.put all-activities ~key ~'this))
+               ~(when features
+                  `(request-window-features! ~'this ~@features))
+               (safe-for-ui ~@body)))
          ~@(for [[_ [mname args & body]] (dissoc methods 'onCreate)]
              `(defn ~(symbol (str prefix mname))
                 [~(vary-meta (first args) assoc :tag name)
