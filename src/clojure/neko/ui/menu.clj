@@ -117,7 +117,7 @@
   which bit-or operation will be applied."
   [^MenuItem wdg, {:keys [show-as-action]} _]
   (let [value (if (vector? show-as-action)
-                (apply bit-or (map show-as-action-value show-as-action))
+                (apply bit-or 0 (map show-as-action-value show-as-action))
                 (show-as-action-value show-as-action))]
     (.setShowAsAction wdg value)))
 
