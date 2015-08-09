@@ -47,7 +47,8 @@
   (if (:neko.init/release-build *compiler-options*)
     `(do ~@body)
     `(try ~@body
-          (catch Throwable e# (handle-exception-from-ui-thread e#)))))
+          (catch Throwable e# (handle-exception-from-ui-thread e#)
+                 false))))
 
 (defn safe-for-ui*
   "Wraps the given zero-argument function in `safe-for-ui` call and returns it,
