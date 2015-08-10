@@ -7,11 +7,6 @@
   (:import android.view.View
            android.app.Activity))
 
-(defn- nil-or-view?
-  [x]
-  (or (nil? x)
-      (instance? android.view.View x)))
-
 (defprotocol ViewFinder
   "Protocol for finding child views by their `:id` trait."
   (find-view [container id]))
@@ -19,12 +14,10 @@
 (extend-protocol ViewFinder
   View
   (find-view [^View view, id]
-    {:post [(nil-or-view? %)]}
     (get (.getTag view) id))
 
   Activity
   (find-view [^Activity activity, id]
-    {:post [(nil-or-view? %)]}
     (find-view (get-decor-view activity) id)))
 
 (defn find-views
