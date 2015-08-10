@@ -6,7 +6,7 @@
   (:use [neko.-utils :only [keyword->static-field reflect-field]])
   (:import [android.widget LinearLayout Button EditText ListView SearchView
             ImageView ImageView$ScaleType RelativeLayout ScrollView FrameLayout
-            Gallery]
+            Gallery GridView]
            android.app.ProgressDialog
            android.view.inputmethod.EditorInfo
            [android.view View ViewGroup$LayoutParams Gravity]))
@@ -76,7 +76,10 @@
     :gallery {:classname android.widget.Gallery
               :inherits :view-group
               :traits [:on-item-click]}
-    
+    :grid-view {:classname android.widget.GridView
+                :inherits :view-group
+                :traits [:on-item-click]}
+
     ;; Other
     :layout-params {:classname ViewGroup$LayoutParams
                     :values {:fill ViewGroup$LayoutParams/FILL_PARENT
@@ -106,6 +109,7 @@
     android.webkit.WebView :web-view
     android.widget.ScrollView :scroll-view
     android.widget.Gallery :gallery
+    android.widget.GridView :grid-view
     android.app.ProgressDialog :progress-dialog}))
 
 (defn set-classname!
