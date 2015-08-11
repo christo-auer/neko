@@ -51,8 +51,6 @@
     :progress-bar {:classname android.widget.ProgressBar
                    :inherits  :view
                    :value-namespaces {:visibility android.view.View}}
-    :progress-bar-large {:inherits  :progress-bar
-                         :constructor-args [nil android.R$attr/progressBarStyleLarge]}
     :text-view {:classname android.widget.TextView
                 :inherits :view
                 :value-namespaces
@@ -110,6 +108,7 @@
     android.widget.ScrollView :scroll-view
     android.widget.Gallery :gallery
     android.widget.GridView :grid-view
+    android.widget.ProgressBar :progress-bar
     android.app.ProgressDialog :progress-dialog}))
 
 (defn set-classname!
