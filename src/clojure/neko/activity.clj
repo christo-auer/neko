@@ -95,7 +95,8 @@
           prefix (or prefix (str sname "-"))
           extends (resolve (or extends 'Activity))
           state (or state `(atom {}))
-          exposed-methods (if (:neko.init/release-build *compiler-options*)
+          release-build? (:neko.init/release-build *compiler-options*)
+          exposed-methods (if release-build?
                             (map str (keys methods))
                             (u/list-all-methods extends))]
       `(do
@@ -107,7 +108,9 @@
           :state "state"
           :extends ~extends
           :implements ~(conj implements neko.ActivityWithState)
-          :overrides-methods ~(conj (keys methods) 'getState)
+          :overrides-methods ~(when release-build?
+                                (map (fn [[_ [mname args]]] [mname (count args)])
+                                     (assoc methods 'getState '(getState [this]))))
           :exposes-methods
           ~(->> exposed-methods
                 distinct
