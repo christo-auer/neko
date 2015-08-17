@@ -8,7 +8,7 @@
             neko.listeners.search-view
             [neko.-utils :refer [memoized int-id]])
   (:import [android.widget LinearLayout$LayoutParams ListView TextView SearchView
-            ImageView RelativeLayout RelativeLayout$LayoutParams
+            ImageView RelativeLayout RelativeLayout$LayoutParams AdapterView
             AbsListView$LayoutParams FrameLayout$LayoutParams Gallery$LayoutParams]
            [android.view View ViewGroup$LayoutParams
             ViewGroup$MarginLayoutParams]
@@ -479,6 +479,6 @@ next-level elements."
     id       Item view row id
 
   and sets it as an OnItemClickListener for the widget."
-  [^ListView wdg, {:keys [on-item-click]} _]
+  [^AdapterView wdg, {:keys [on-item-click]} _]
   (.setOnItemClickListener wdg (adapter-view/on-item-click-call on-item-click)))
 
