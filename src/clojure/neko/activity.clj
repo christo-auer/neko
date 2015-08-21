@@ -93,12 +93,12 @@
 
           sname (u/simple-name name)
           prefix (or prefix (str sname "-"))
-          extends (or extends 'android.app.Activity)
+          extends (resolve (or extends 'Activity))
           state (or state `(atom {}))
           release-build? (:neko.init/release-build *compiler-options*)
           exposed-methods (if release-build?
                             (map str (keys methods))
-                            (u/list-all-methods (resolve extends)))]
+                            (u/list-all-methods extends))]
       `(do
          (gen-class
           :name ~name
@@ -106,7 +106,7 @@
           :prefix ~prefix
           :init "init"
           :state "state"
-          :extends ~extends
+          :extends ~(symbol (.getName extends))
           :implements ~(conj implements neko.ActivityWithState)
           :overrides-methods ~(when release-build?
                                 (map (fn [[_ [mname args]]] [mname (count args)])
