@@ -13,8 +13,7 @@
         include (fn [subelems list] (every? (fn [x] (some #(= % x) list)) subelems))]
     (testing "widgets"
       (is (include [":view" ":view-group"] (comp/candidates ":vi" *ns* widget-ctx)))
-      (is (include [":progress-bar" ":progress-bar-large"]
-                   (comp/candidates ":progress" *ns* widget-ctx)))
+      (is (include [":progress-bar"] (comp/candidates ":progress" *ns* widget-ctx)))
       (is (= [] (comp/candidates ":bollocks" *ns* widget-ctx))))
 
     (testing "attributes"

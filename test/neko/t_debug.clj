@@ -26,7 +26,7 @@
   (ShadowToast/reset)
   (is (thrown? ArithmeticException (/ 1 0)))
   (is (= 1 (dbg/safe-for-ui (/ 2 2))))
-  (is (= nil (dbg/safe-for-ui (/ 1 0))))
+  (is (not (dbg/safe-for-ui (/ 1 0))))
   (is (= 1 (ShadowToast/shownToastCount)))
   (is (instance? ArithmeticException (dbg/ui-e))))
 
