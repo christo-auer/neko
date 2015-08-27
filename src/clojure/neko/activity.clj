@@ -93,7 +93,7 @@
 
           sname (u/simple-name name)
           prefix (or prefix (str sname "-"))
-          extends (resolve (or extends 'Activity))
+          extends (resolve (or extends 'android.app.Activity))
           state (or state `(atom {}))
           release-build? (:neko.init/release-build *compiler-options*)
           exposed-methods (if release-build?
