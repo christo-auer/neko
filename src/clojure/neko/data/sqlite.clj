@@ -284,6 +284,14 @@
            (map-to-content tagged-db table-name data-map)))
 (def db-insert insert)
 
+(defn delete
+  "Executes DELETE query against the database on the given table with the given
+  where clauses."
+  [^TaggedDatabase tagged-db table-name where]
+  (.delete ^SQLiteDatabase (.db tagged-db) (name table-name)
+           (where-clause where) nil))
+
+
 (defn transact*
   "Executed nullary transact-fn in a transaction for batch query execution."
   [^TaggedDatabase tagged-db, transact-fn]
