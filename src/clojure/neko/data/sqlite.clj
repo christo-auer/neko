@@ -171,7 +171,7 @@
   (if (string? where)
     where
     (->> where
-         (map (partial apply keyval-to-sql))
+         (map #(str "(" (apply keyval-to-sql %) ")"))
          (interpose " AND ")
          string/join)))
 
