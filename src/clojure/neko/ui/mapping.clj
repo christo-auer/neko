@@ -17,7 +17,7 @@
    ;; UI widgets
    {:view {:classname android.view.View
            :traits [:def :id :padding :on-click :on-long-click :on-touch
-                    :on-create-context-menu :on-key
+                    :on-create-context-menu :on-key :on-focus-change
                     :default-layout-params :linear-layout-params
                     :relative-layout-params :listview-layout-params
                     :frame-layout-params :gallery-layout-params]
