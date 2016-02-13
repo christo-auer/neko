@@ -1,3 +1,4 @@
+
 (ns neko.dialog.alert
   "Helps build and manage alert dialogs.  The core functionality of this
   namespace is built around the AlertDialogBuilder protocol.  This allows using
@@ -11,8 +12,11 @@
             [neko.resource :as res]
             neko.ui
             [neko.ui.mapping :refer [defelement]]
-            [neko.ui.traits :refer [deftrait]])
+            [neko.ui.traits :refer [deftrait]]
+            [neko.ui :refer [make-ui-element]])
   (:import android.app.AlertDialog$Builder))
+
+
 
 (deftrait :positive-button
   "Takes :positive-text (either string or resource ID)
@@ -44,10 +48,28 @@
   (.setNeutralButton builder (res/get-string (.getContext builder) neutral-text)
                      (listeners/on-click-call neutral-callback)))
 
+(deftrait :view
+  "Takes a tree of a view description and sets it as the custom view of the
+  dialog."
+  [^AlertDialog$Builder builder
+   {:keys [view]} _]
+  (.setView builder (make-ui-element (.getContext builder) view {})))
+
+
+(deftrait :items
+  "Takes :item-list (a collection of strings or IDs pointing to strings)
+  and :item-callback (function of 2 args: dialog and picked item as integer), and sets it as
+  the list for the dialog."
+  {:attributes [:item-list :item-callback]}
+  [^AlertDialog$Builder builder,
+   {:keys [item-list item-callback]} _]
+  (.setItems builder #^"[Ljava.lang.String;" (into-array ^String java.lang.CharSequence (map res/get-string item-list))
+             (listeners/on-click-call item-callback)))
+
 (defelement :alert-dialog-builder
   :classname AlertDialog$Builder
   :inherits nil
-  :traits [:positive-button :negative-button :neutral-button])
+  :traits [:positive-button :negative-button :neutral-button :items :custom-view])
 
 (defn ^AlertDialog$Builder alert-dialog-builder
   "Creates a AlertDialog$Builder options with the given parameters."
