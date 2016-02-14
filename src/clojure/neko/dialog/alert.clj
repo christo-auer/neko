@@ -11,12 +11,11 @@
   (:require [neko.listeners.dialog :as listeners]
             [neko.resource :as res]
             neko.ui
+            [neko.find-view]
             [neko.ui.mapping :refer [defelement]]
             [neko.ui.traits :refer [deftrait]]
             [neko.ui :refer [make-ui-element]])
   (:import android.app.AlertDialog$Builder))
-
-
 
 (deftrait :positive-button
   "Takes :positive-text (either string or resource ID)
@@ -75,3 +74,9 @@
   "Creates a AlertDialog$Builder options with the given parameters."
   [context options-map]
   (neko.ui/make-ui context [:alert-dialog-builder options-map]))
+
+; extend protocol for finding custom views in alert dialogs
+(extend-protocol neko.find-view/ViewFinder
+  AlertDialog
+  (find-view [^AlertDialog alert-dialog, id]
+    (.findViewById alert-dialog (neko.-utils/int-id id))))
