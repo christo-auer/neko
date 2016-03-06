@@ -15,7 +15,7 @@
             [neko.ui.mapping :refer [defelement]]
             [neko.ui.traits :refer [deftrait]]
             [neko.ui :refer [make-ui-element]])
-  (:import android.app.AlertDialog$Builder))
+  (:import android.app.AlertDialog android.app.AlertDialog$Builder))
 
 (deftrait :positive-button
   "Takes :positive-text (either string or resource ID)
@@ -68,7 +68,7 @@
 (defelement :alert-dialog-builder
   :classname AlertDialog$Builder
   :inherits nil
-  :traits [:positive-button :negative-button :neutral-button :items :custom-view])
+  :traits [:positive-button :negative-button :neutral-button :items :view])
 
 (defn ^AlertDialog$Builder alert-dialog-builder
   "Creates a AlertDialog$Builder options with the given parameters."

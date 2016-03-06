@@ -46,4 +46,4 @@
 
 
   :android {:library true
-            :target-version 18})
+            :target-version 22})
